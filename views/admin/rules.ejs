@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Credit-OS | Credit Rules</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body class="app-body">
+    <%- include('../partials/nav', { activePage: 'rules' }) %>
+
+        <div class="admin-layout">
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">Credit Policy Rules</h1>
+                    <p class="page-sub">Loan Eligibility & Decision Rules — <strong>
+                            <%= items.length %>
+                        </strong> records</p>
+                </div>
+                <button class="btn-primary" onclick="toggleForm()">+ Add New</button>
+            </div>
+
+            <% if (error) { %>
+                <div class="alert alert-error"><span>⚠</span>
+                    <%= error %>
+                </div>
+                <% } %>
+
+                    <!-- ADD / EDIT FORM -->
+                    <div class="form-panel" id="formPanel" style="<%= editItem ? '' : 'display:none' %>">
+                        <h2 class="form-panel-title" id="add">
+                            <%= editItem ? '✏️ Edit Rule' : '➕ New Credit Rule' %>
+                        </h2>
+                        <form action="/admin/rules/save" method="POST" class="crud-form">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label>Rule ID *</label>
+                                    <input type="text" name="rule_id" placeholder="e.g. CR-029"
+                                        value="<%= editItem ? editItem['Rule ID'] : '' %>" <%=editItem ? 'readonly' : ''
+                                        %> required/>
+                                </div>
+                                <div class="form-group">
+                                    <label>Document Type</label>
+                                    <input type="text" name="document_type"
+                                        value="<%= editItem ? editItem['Document Type'] : 'Credit Policy' %>" />
+                                </div>
+                                <div class="form-group form-full">
+                                    <label>Description *</label>
+                                    <textarea name="description" rows="2"
+                                        required><%= editItem ? editItem['Description'] : '' %></textarea>
+                                </div>
+                                <div class="form-group form-full">
+                                    <label>Conditions</label>
+                                    <textarea name="conditions"
+                                        rows="2"><%= editItem ? editItem['Conditions'] : '' %></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label>Exceptions</label>
+                                    <input type="text" name="exceptions"
+                                        value="<%= editItem ? editItem['Exceptions'] : 'None' %>" />
+                                </div>
+                                <div class="form-group">
+                                    <label>Customer Segment</label>
+                                    <select name="customer_segment">
+                                        <% ['All','Salaried','Self-employed','Premium'].forEach(function(s){ %>
+                                            <option value="<%= s %>" <%=editItem && editItem['Customer
+                                                Segment']===s?'selected':'' %>><%= s %>
+                                            </option>
+                                            <% }) %>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Risk Category</label>
+                                    <select name="risk_category">
+                                        <% ['Very High','High','Medium','Low'].forEach(function(r){ %>
+                                            <option value="<%= r %>" <%=editItem && editItem['Risk
+                                                Category']===r?'selected':'' %>><%= r %>
+                                            </option>
+                                            <% }) %>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Decision Impact</label>
+                                    <select name="decision_impact">
+                                        <% ['Reject','Manual Review','Refer','Approve'].forEach(function(d){ %>
+                                            <option value="<%= d %>" <%=editItem && editItem['Decision
+                                                Impact']===d?'selected':'' %>><%= d %>
+                                            </option>
+                                            <% }) %>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Priority</label>
+                                    <select name="priority">
+                                        <% ['High','Medium','Low'].forEach(function(p){ %>
+                                            <option value="<%= p %>" <%=editItem &&
+                                                editItem['Priority']===p?'selected':'' %>><%= p %>
+                                            </option>
+                                            <% }) %>
+                                    </select>
+                                </div>
+                                <div class="form-group form-full">
+                                    <label>Notes</label>
+                                    <input type="text" name="notes" value="<%= editItem ? editItem['Notes'] : '' %>" />
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="btn-primary">
+                                    <%= editItem ? '💾 Update' : '✅ Save' %>
+                                </button>
+                                <a href="/admin/rules" class="btn-ghost">Cancel</a>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- TABLE -->
+                    <div class="table-container">
+                        <div class="table-toolbar">
+                            <input type="text" class="table-search" placeholder="🔍 Search rules..." id="tableSearch"
+                                oninput="filterTable()" />
+                            <span class="table-count" id="tableCount">
+                                <%= items.length %> items
+                            </span>
+                        </div>
+                        <div class="table-wrap">
+                            <table class="data-table" id="dataTable">
+                                <thead>
+                                    <tr>
+                                        <th>Rule ID</th>
+                                        <th>Description</th>
+                                        <th>Segment</th>
+                                        <th>Risk</th>
+                                        <th>Decision</th>
+                                        <th>Priority</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% items.forEach(function(item){ %>
+                                        <tr>
+                                            <td><span class="id-badge id-badge-rule">
+                                                    <%= item['Rule ID'] %>
+                                                </span></td>
+                                            <td class="cell-wrap">
+                                                <%= item['Description'] %>
+                                            </td>
+                                            <td class="cell-sm">
+                                                <%= item['Customer Segment'] %>
+                                            </td>
+                                            <td>
+                                                <span
+                                                    class="risk-badge risk-<%= item['Risk Category'] ? item['Risk Category'].replace(' ','').toLowerCase() : 'low' %>">
+                                                    <%= item['Risk Category'] %>
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span
+                                                    class="decision-badge decision-<%= item['Decision Impact'] ? item['Decision Impact'].replace(' ','-').toLowerCase() : 'refer' %>">
+                                                    <%= item['Decision Impact'] %>
+                                                </span>
+                                            </td>
+                                            <td><span
+                                                    class="priority-badge priority-<%= item['Priority'] ? item['Priority'].toLowerCase() : 'medium' %>">
+                                                    <%= item['Priority'] %>
+                                                </span></td>
+                                            <td class="cell-actions">
+                                                <a href="/admin/rules/edit/<%= encodeURIComponent(item['Rule ID']) %>"
+                                                    class="btn-action btn-edit">Edit</a>
+                                                <form
+                                                    action="/admin/rules/delete/<%= encodeURIComponent(item['Rule ID']) %>"
+                                                    method="POST" style="display:inline"
+                                                    onsubmit="return confirm('Delete <%= item[" Rule ID"] %>?')">
+                                                    <button type="submit" class="btn-action btn-delete">Delete</button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                        <% }) %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+        </div>
+        <script src="/js/admin.js"></script>
+</body>
+
+</html>

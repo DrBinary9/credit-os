@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Credit-OS | Admin Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body class="app-body">
+    <%- include('../partials/nav', { activePage: 'dashboard' }) %>
+
+        <div class="admin-layout">
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">Admin Dashboard</h1>
+                    <p class="page-sub">Rule Engine Control Panel</p>
+                </div>
+                <span class="badge-admin-pill">🛡 Administrator</span>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card stat-blue">
+                    <div class="stat-icon">📋</div>
+                    <div class="stat-info">
+                        <h2>
+                            <%= compCount %>
+                        </h2>
+                        <p>Compliance Guidelines</p>
+                    </div>
+                    <a href="/admin/compliance" class="stat-link">Manage →</a>
+                </div>
+                <div class="stat-card stat-purple">
+                    <div class="stat-icon">⚖️</div>
+                    <div class="stat-info">
+                        <h2>
+                            <%= ruleCount %>
+                        </h2>
+                        <p>Credit Policy Rules</p>
+                    </div>
+                    <a href="/admin/rules" class="stat-link">Manage →</a>
+                </div>
+                <div class="stat-card stat-red">
+                    <div class="stat-icon">🚨</div>
+                    <div class="stat-info">
+                        <h2>
+                            <%= compHigh %>
+                        </h2>
+                        <p>High-Risk Compliance Items</p>
+                    </div>
+                </div>
+                <div class="stat-card stat-orange">
+                    <div class="stat-icon">⚠️</div>
+                    <div class="stat-info">
+                        <h2>
+                            <%= ruleHigh %>
+                        </h2>
+                        <p>High-Risk Credit Rules</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="quick-actions">
+                <h2 class="section-title">Quick Actions</h2>
+                <div class="action-cards">
+                    <a href="/admin/compliance" class="action-card">
+                        <span class="action-icon">📋</span>
+                        <div>
+                            <h3>Manage Compliance</h3>
+                            <p>View, add, edit, or delete RBI compliance guidelines</p>
+                        </div>
+                        <span class="action-arrow">→</span>
+                    </a>
+                    <a href="/admin/rules" class="action-card">
+                        <span class="action-icon">⚖️</span>
+                        <div>
+                            <h3>Manage Credit Rules</h3>
+                            <p>Manage credit policy rules and decision criteria</p>
+                        </div>
+                        <span class="action-arrow">→</span>
+                    </a>
+                    <a href="/admin/compliance#add" class="action-card action-card-highlight">
+                        <span class="action-icon">➕</span>
+                        <div>
+                            <h3>Add Compliance Rule</h3>
+                            <p>Create a new compliance guideline</p>
+                        </div>
+                        <span class="action-arrow">→</span>
+                    </a>
+                    <a href="/admin/rules#add" class="action-card action-card-highlight">
+                        <span class="action-icon">➕</span>
+                        <div>
+                            <h3>Add Credit Rule</h3>
+                            <p>Create a new credit policy rule</p>
+                        </div>
+                        <span class="action-arrow">→</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+</body>
+
+</html>

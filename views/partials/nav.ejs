@@ -1,0 +1,28 @@
+<nav class="navbar">
+    <div class="nav-brand">
+        <span class="logo-icon-sm">C+</span>
+        <span class="brand-name">Credit<span class="accent">OS</span></span>
+    </div>
+    <div class="nav-links">
+        <% if (user && user.role==='admin' ) { %>
+            <a href="/admin/dashboard"
+                class="nav-link <%= typeof activePage !== 'undefined' && activePage === 'dashboard' ? 'active' : '' %>">Dashboard</a>
+            <a href="/admin/compliance"
+                class="nav-link <%= typeof activePage !== 'undefined' && activePage === 'compliance' ? 'active' : '' %>">Compliance</a>
+            <a href="/admin/rules"
+                class="nav-link <%= typeof activePage !== 'undefined' && activePage === 'rules' ? 'active' : '' %>">Credit
+                Rules</a>
+            <% } else if (user) { %>
+                <a href="/chat" class="nav-link active">Loan Advisor</a>
+                <% } %>
+    </div>
+    <div class="nav-user">
+        <% if (user) { %>
+            <span class="user-badge <%= user.role === 'admin' ? 'badge-admin' : 'badge-user' %>">
+                <%= user.role==='admin' ? '🛡' : '👤' %>
+                    <%= user.username %>
+            </span>
+            <a href="/logout" class="btn-logout">Sign Out</a>
+            <% } %>
+    </div>
+</nav>

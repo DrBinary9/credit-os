@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Credit-OS | AI Loan Advisor</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body class="app-body">
+
+    <%- include('../partials/nav') %>
+
+        <div class="chat-layout">
+            <!-- Sidebar -->
+            <aside class="chat-sidebar">
+                <div class="sidebar-header">
+                    <h2>Loan Advisor</h2>
+                    <p>AI-powered credit evaluation</p>
+                </div>
+                <div class="sidebar-tips">
+                    <h3>📋 What to Include</h3>
+                    <ul>
+                        <li><span>👤</span> Age &amp; citizenship</li>
+                        <li><span>💼</span> Employment type &amp; income</li>
+                        <li><span>📊</span> Credit score</li>
+                        <li><span>💰</span> Loan amount &amp; tenure</li>
+                        <li><span>📍</span> Location / city</li>
+                        <li><span>📄</span> KYC / PAN / Aadhaar status</li>
+                        <li><span>🏦</span> Existing loans / EMIs</li>
+                        <li><span>⚠</span> Any DPD / write-offs</li>
+                    </ul>
+                </div>
+                <div class="sidebar-example">
+                    <h3>💡 Example Query</h3>
+                    <p class="example-text">"I am 30 years old, salaried, earning ₹50,000/month. Credit score 720.
+                        Applying for ₹5,00,000 loan for 36 months. KYC complete, no defaults."</p>
+                    <button class="btn-ghost" id="fillExample">Use this example</button>
+                </div>
+                <button class="btn-danger-outline" id="resetChat">🗑 Clear Chat</button>
+            </aside>
+
+            <!-- Main Chat -->
+            <main class="chat-main">
+                <div class="chat-header">
+                    <div class="chat-header-info">
+                        <h1>Credit Evaluation Assistant</h1>
+                        <span class="status-badge active">● Live</span>
+                    </div>
+                    <div class="chat-header-model">
+                        <span>Claude 3.7 Sonnet</span>
+                    </div>
+                </div>
+
+                <div class="chat-messages" id="chatMessages">
+                    <!-- Welcome -->
+                    <div class="msg-row agent">
+                        <div class="msg-avatar agent-avatar">AI</div>
+                        <div class="msg-bubble agent-bubble">
+                            <p>Hello! I'm your Credit-OS AI Advisor powered by Claude 3.7 Sonnet. I evaluate loan
+                                applications against RBI compliance guidelines and your institution's credit policy.</p>
+                            <p>Please provide your loan application details and I'll give you an instant evaluation with
+                                decision, compliance status, and explanation.</p>
+                        </div>
+                    </div>
+
+                    <!-- Existing messages from session -->
+                    <% (messages || []).forEach(function(msg) { %>
+                        <% if (msg.role==='user' ) { %>
+                            <div class="msg-row user">
+                                <div class="msg-bubble user-bubble">
+                                    <%= msg.text %>
+                                </div>
+                                <div class="msg-avatar user-avatar">U</div>
+                            </div>
+                            <% } else { %>
+                                <div class="msg-row agent">
+                                    <div class="msg-avatar agent-avatar">AI</div>
+                                    <div class="msg-bubble agent-bubble">
+                                        <% if (msg.parsed) { %>
+                                            <%- buildDecisionCard(msg.parsed) %>
+                                                <% } else { %>
+                                                    <p>
+                                                        <%= msg.text %>
+                                                    </p>
+                                                    <% } %>
+                                    </div>
+                                </div>
+                                <% } %>
+                                    <% }) %>
+                </div>
+
+                <!-- Typing indicator -->
+                <div class="typing-indicator" id="typingIndicator" style="display:none">
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                    <span>AI is analyzing...</span>
+                </div>
+
+                <!-- Input -->
+                <div class="chat-input-area">
+                    <textarea id="chatInput" placeholder="Describe your loan application details..."
+                        rows="3"></textarea>
+                    <div class="chat-input-actions">
+                        <span class="char-count" id="charCount">0 / 2000</span>
+                        <button class="btn-primary" id="sendBtn">Send ↑</button>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <script>
+            const EXAMPLE = "I am 30 years old, Indian citizen, salaried employee at a private firm, earning ₹55,000 per month. My credit score is 720. I have no defaults, no write-offs, no DPD. KYC is complete with PAN and Aadhaar. I have 1 existing personal loan with EMI of ₹8,000/month. I am applying for a personal loan of ₹4,00,000 for 36 months. I live in Mumbai.";
+        </script>
+        <script src="/js/chat.js"></script>
+</body>
+
+</html>
