@@ -516,7 +516,12 @@ function buildDecisionCard(p) {
   }).join("");
 
   const rulesBlock = applied.length
-    ? `<div class="dc-section"><div class="dc-section-head"><span class="dc-section-icon dc-icon-rule">✓</span>Applied Rules<span class="dc-count">${applied.length}</span></div><div class="dc-tags">${applied.map(r => `<span class="dc-tag dc-tag-rule rule-link" data-id="${escapeHtml(String(r))}">${escapeHtml(String(r))}</span>`).join("")}</div></div>`
+    ? `<div class="dc-section"><div class="dc-section-head"><span class="dc-section-icon dc-icon-rule">✓</span>Applied Rules<span class="dc-count">${applied.length}</span></div><div class="dc-tags">${applied.map(r => {
+      const rStr = String(r);
+      const idMatch = rStr.match(/^([A-Z]+-\d+)/);
+      const ruleId = idMatch ? idMatch[1] : rStr;
+      return `<span class="dc-tag dc-tag-rule rule-link" data-id="${escapeHtml(ruleId)}">${escapeHtml(rStr)}</span>`;
+    }).join("")}</div></div>`
     : `<div class="dc-section dc-section-muted"><div class="dc-section-head"><span class="dc-section-icon dc-icon-rule">✓</span>Applied Rules</div><p class="dc-empty-hint">No rules evaluated yet.</p></div>`;
 
   const violationsBlock = violations.length

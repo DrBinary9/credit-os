@@ -7,6 +7,10 @@
     "start": "node app.js",
     "dev": "node app.js"
   },
+  "engines": {
+    "node": "18.x",
+    "npm": ">=9"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
