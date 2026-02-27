@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const { requireUser } = require("../middleware/auth");
 const { invokeAgent } = require("../lib/bedrock");
+const { getItem } = require("../lib/dynamo");
 const { v4: uuidv4 } = require("uuid");
 
 // GET /chat
@@ -68,6 +69,28 @@ router.post("/reset", requireUser, (req, res) => {
     req.session.chatSessionId = uuidv4();
     req.session.save(() => { });
     res.json({ success: true });
+});
+
+// GET /api/rule/:id (Fetch rule details from DynamoDB)
+router.get("/api/rule/:id", requireUser, async (req, res) => {
+    const ruleId = req.params.id;
+    try {
+        let item = null;
+        if (ruleId.startsWith("CMP-")) {
+            item = await getItem(process.env.COMPLIANCE_TABLE, { guideline_id: ruleId });
+        } else {
+            item = await getItem(process.env.RULES_TABLE, { "Rule ID": ruleId });
+        }
+
+        if (item) {
+            res.json({ success: true, rule: item });
+        } else {
+            res.json({ success: false, error: "Rule not found" });
+        }
+    } catch (err) {
+        console.error("DynamoDB error fetching rule:", err);
+        res.json({ success: false, error: "Database error" });
+    }
 });
 
 module.exports = router;

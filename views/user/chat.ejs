@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Credit-OS | AI Loan Advisor</title>
+    <title>Credit-OS | Agent Credit Advisor</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/style.css">
@@ -18,36 +18,51 @@
             <!-- Sidebar -->
             <aside class="chat-sidebar">
                 <div class="sidebar-header">
-                    <h2>Loan Advisor</h2>
-                    <p>AI-powered credit evaluation</p>
+                    <h2>Credit Advisor</h2>
+                    <p>Agent-powered credit evaluation</p>
                 </div>
+
+                <!-- Wizard start button -->
+                <div class="wizard-start-card">
+                    <div class="wsc-icon">🧭</div>
+                    <div class="wsc-body">
+                        <h3>Guided Evaluation</h3>
+                        <p>Answer 9 quick questions and get an instant Agent credit decision.</p>
+                    </div>
+                    <button class="btn-wizard-start" id="startWizard">Start ↗</button>
+                </div>
+
+                <div class="sidebar-divider"><span>or ask freely</span></div>
+
                 <div class="sidebar-tips">
                     <h3>📋 What to Include</h3>
                     <ul>
                         <li><span>👤</span> Age &amp; citizenship</li>
-                        <li><span>💼</span> Employment type &amp; income</li>
+                        <li><span>💼</span> Employment &amp; income</li>
                         <li><span>📊</span> Credit score</li>
-                        <li><span>💰</span> Loan amount &amp; tenure</li>
-                        <li><span>📍</span> Location / city</li>
-                        <li><span>📄</span> KYC / PAN / Aadhaar status</li>
-                        <li><span>🏦</span> Existing loans / EMIs</li>
+                        <li><span>💰</span> Credit limit &amp; tenure</li>
+                        <li><span>📍</span> City / location</li>
+                        <li><span>📄</span> KYC status</li>
+                        <li><span>🏦</span> Existing EMIs / credit lines</li>
                         <li><span>⚠</span> Any DPD / write-offs</li>
                     </ul>
                 </div>
-                <div class="sidebar-example">
-                    <h3>💡 Example Query</h3>
-                    <p class="example-text">"I am 30 years old, salaried, earning ₹50,000/month. Credit score 720.
-                        Applying for ₹5,00,000 loan for 36 months. KYC complete, no defaults."</p>
-                    <button class="btn-ghost" id="fillExample">Use this example</button>
-                </div>
+
                 <button class="btn-danger-outline" id="resetChat">🗑 Clear Chat</button>
             </aside>
 
             <!-- Main Chat -->
             <main class="chat-main">
+
+                <!-- Progress bar for wizard (hidden by default) -->
+                <div class="wizard-progress-bar" id="wizardProgressBar" style="display:none">
+                    <div class="wpb-step" id="wpbStep"></div>
+                    <div class="wpb-fill" id="wpbFill"></div>
+                </div>
+
                 <div class="chat-header">
                     <div class="chat-header-info">
-                        <h1>Credit Evaluation Assistant</h1>
+                        <h1 id="chatTitle">Credit Evaluation Assistant</h1>
                         <span class="status-badge active">● Live</span>
                     </div>
                     <div class="chat-header-model">
@@ -56,41 +71,18 @@
                 </div>
 
                 <div class="chat-messages" id="chatMessages">
-                    <!-- Welcome -->
-                    <div class="msg-row agent">
-                        <div class="msg-avatar agent-avatar">AI</div>
+                    <!-- Welcome message -->
+                    <div class="msg-row agent" id="welcomeMsg">
+                        <div class="msg-avatar agent-avatar">Agent</div>
                         <div class="msg-bubble agent-bubble">
-                            <p>Hello! I'm your Credit-OS AI Advisor powered by Claude 3.7 Sonnet. I evaluate loan
-                                applications against RBI compliance guidelines and your institution's credit policy.</p>
-                            <p>Please provide your loan application details and I'll give you an instant evaluation with
-                                decision, compliance status, and explanation.</p>
+                            <p>Hello! I'm your <strong>Credit-OS Agent Advisor</strong>. I evaluate credit limit
+                                applications
+                                against RBI compliance guidelines and your institution's credit policy.</p>
+                            <p style="margin-top:8px">You can <strong>type your full application details</strong> below,
+                                or click <strong>"Start Guided Evaluation"</strong> in the sidebar for a step-by-step
+                                guided flow.</p>
                         </div>
                     </div>
-
-                    <!-- Existing messages from session -->
-                    <% (messages || []).forEach(function(msg) { %>
-                        <% if (msg.role==='user' ) { %>
-                            <div class="msg-row user">
-                                <div class="msg-bubble user-bubble">
-                                    <%= msg.text %>
-                                </div>
-                                <div class="msg-avatar user-avatar">U</div>
-                            </div>
-                            <% } else { %>
-                                <div class="msg-row agent">
-                                    <div class="msg-avatar agent-avatar">AI</div>
-                                    <div class="msg-bubble agent-bubble">
-                                        <% if (msg.parsed) { %>
-                                            <%- buildDecisionCard(msg.parsed) %>
-                                                <% } else { %>
-                                                    <p>
-                                                        <%= msg.text %>
-                                                    </p>
-                                                    <% } %>
-                                    </div>
-                                </div>
-                                <% } %>
-                                    <% }) %>
                 </div>
 
                 <!-- Typing indicator -->
@@ -98,24 +90,74 @@
                     <div class="dot"></div>
                     <div class="dot"></div>
                     <div class="dot"></div>
-                    <span>AI is analyzing...</span>
+                    <span>Agent is analyzing your application...</span>
                 </div>
 
-                <!-- Input -->
-                <div class="chat-input-area">
-                    <textarea id="chatInput" placeholder="Describe your loan application details..."
+                <!-- WIZARD CONTROLS (shown when wizard is active) -->
+                <div class="wizard-input-area" id="wizardInputArea" style="display:none">
+                    <div class="wizard-question-meta" id="wizardMeta"></div>
+                    <!-- Options (for option-type questions) -->
+                    <div class="wizard-options" id="wizardOptions"></div>
+                    <!-- Number / Text input (for input-type questions) -->
+                    <div class="wizard-text-input" id="wizardTextInput" style="display:none">
+                        <div class="wizard-input-wrap">
+                            <input type="number" id="wizardNumberField" class="wizard-field" placeholder="" />
+                            <span class="wizard-unit" id="wizardUnit"></span>
+                        </div>
+                        <div class="wizard-input-hint" id="wizardInputHint"></div>
+                        <button class="btn-primary" id="wizardNextBtn">Next →</button>
+                    </div>
+                    <!-- Credit score slider (special) -->
+                    <div class="wizard-slider-area" id="wizardSliderArea" style="display:none">
+                        <div class="score-slider-wrap">
+                            <div class="score-bands">
+                                <span class="sb sb-red">Reject<br>&lt;650</span>
+                                <span class="sb sb-orange">Manual<br>650–699</span>
+                                <span class="sb sb-yellow">Review<br>700–749</span>
+                                <span class="sb sb-green">Auto<br>≥750</span>
+                            </div>
+                            <input type="range" id="scoreSlider" class="score-slider" min="300" max="900" value="700"
+                                step="5" />
+                            <div class="score-display" id="scoreDisplay">
+                                <span class="score-number" id="scoreNumber">700</span>
+                                <span class="score-label" id="scoreLabel"></span>
+                            </div>
+                        </div>
+                        <button class="btn-primary" id="sliderNextBtn">Next →</button>
+                    </div>
+
+                    <!-- Skip row (shown for every question) -->
+                    <div class="wizard-skip-row" id="wizardNoteRow">
+                        <button class="btn-skip" id="wizardSkipBtn" type="button">Skip this question ⟩</button>
+                    </div>
+                </div>
+
+                <!-- Normal chat input (shown when NOT in wizard) -->
+                <div class="chat-input-area" id="chatInputArea">
+                    <textarea id="chatInput"
+                        placeholder="Describe your credit application details... (or use the Guided Evaluation in the sidebar)"
                         rows="3"></textarea>
                     <div class="chat-input-actions">
                         <span class="char-count" id="charCount">0 / 2000</span>
                         <button class="btn-primary" id="sendBtn">Send ↑</button>
                     </div>
                 </div>
+
             </main>
         </div>
 
-        <script>
-            const EXAMPLE = "I am 30 years old, Indian citizen, salaried employee at a private firm, earning ₹55,000 per month. My credit score is 720. I have no defaults, no write-offs, no DPD. KYC is complete with PAN and Aadhaar. I have 1 existing personal loan with EMI of ₹8,000/month. I am applying for a personal loan of ₹4,00,000 for 36 months. I live in Mumbai.";
-        </script>
+        <!-- Rule Details Modal -->
+        <div class="modal-overlay" id="ruleModalOverlay" style="display: none;"></div>
+        <div class="rule-modal" id="ruleModal" style="display: none;">
+            <div class="rule-modal-header">
+                <h3 id="ruleModalTitle">Rule Details</h3>
+                <button class="rule-modal-close" id="ruleModalClose">&times;</button>
+            </div>
+            <div class="rule-modal-body" id="ruleModalBody">
+                <div class="rm-loading">Loading rule data...</div>
+            </div>
+        </div>
+
         <script src="/js/chat.js"></script>
 </body>
 

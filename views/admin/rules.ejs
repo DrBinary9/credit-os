@@ -17,7 +17,7 @@
             <div class="page-header">
                 <div>
                     <h1 class="page-title">Credit Policy Rules</h1>
-                    <p class="page-sub">Loan Eligibility & Decision Rules — <strong>
+                    <p class="page-sub">Credit Eligibility & Decision Rules — <strong>
                             <%= items.length %>
                         </strong> records</p>
                 </div>
@@ -67,8 +67,8 @@
                                     <label>Customer Segment</label>
                                     <select name="customer_segment">
                                         <% ['All','Salaried','Self-employed','Premium'].forEach(function(s){ %>
-                                            <option value="<%= s %>" <%=editItem && editItem['Customer
-                                                Segment']===s?'selected':'' %>><%= s %>
+                                            <option value="<%= s %>" <%=editItem && editItem['Customer Segment']===s
+                                                ? 'selected' : '' %>><%= s %>
                                             </option>
                                             <% }) %>
                                     </select>
@@ -77,8 +77,8 @@
                                     <label>Risk Category</label>
                                     <select name="risk_category">
                                         <% ['Very High','High','Medium','Low'].forEach(function(r){ %>
-                                            <option value="<%= r %>" <%=editItem && editItem['Risk
-                                                Category']===r?'selected':'' %>><%= r %>
+                                            <option value="<%= r %>" <%=editItem && editItem['Risk Category']===r
+                                                ? 'selected' : '' %>><%= r %>
                                             </option>
                                             <% }) %>
                                     </select>
@@ -87,8 +87,8 @@
                                     <label>Decision Impact</label>
                                     <select name="decision_impact">
                                         <% ['Reject','Manual Review','Refer','Approve'].forEach(function(d){ %>
-                                            <option value="<%= d %>" <%=editItem && editItem['Decision
-                                                Impact']===d?'selected':'' %>><%= d %>
+                                            <option value="<%= d %>" <%=editItem && editItem['Decision Impact']===d
+                                                ? 'selected' : '' %>><%= d %>
                                             </option>
                                             <% }) %>
                                     </select>
@@ -97,8 +97,8 @@
                                     <label>Priority</label>
                                     <select name="priority">
                                         <% ['High','Medium','Low'].forEach(function(p){ %>
-                                            <option value="<%= p %>" <%=editItem &&
-                                                editItem['Priority']===p?'selected':'' %>><%= p %>
+                                            <option value="<%= p %>" <%=editItem && editItem['Priority']===p
+                                                ? 'selected' : '' %>><%= p %>
                                             </option>
                                             <% }) %>
                                     </select>
@@ -173,7 +173,7 @@
                                                 <form
                                                     action="/admin/rules/delete/<%= encodeURIComponent(item['Rule ID']) %>"
                                                     method="POST" style="display:inline"
-                                                    onsubmit="return confirm('Delete <%= item[" Rule ID"] %>?')">
+                                                    onsubmit="return confirm('Delete this rule?')">
                                                     <button type="submit" class="btn-action btn-delete">Delete</button>
                                                 </form>
                                             </td>
